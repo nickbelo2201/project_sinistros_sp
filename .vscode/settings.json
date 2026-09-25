@@ -1,0 +1,12 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "infosiga.db",
+            "group": "default",
+            "database": "${workspaceFolder:project_sinistros_sp}/data/processed/infosiga.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
