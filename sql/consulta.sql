@@ -13,6 +13,7 @@ LEFT JOIN (
     WHERE gravidade_lesao = 'FATAL'
     GROUP BY strftime("%Y-%m", data_obito)
 ) pb ON pa.mes_sinistros = pb.mes_obitos
-ORDER BY pa.mes_sinistros
+ORDER BY pa.mes_sinistros;
 
 -- pergunta 2
+
