@@ -1,4 +1,5 @@
 -- #Como evoluem sinistros e mortes por mes? existe sazonalidade?
+--pct mensal
 SELECT s.mes_sinistros AS mes_ano, s.total_sinistros, p.total_obitos,
 	ROUND(100.0  * p.total_obitos / s.total_sinistros, 1) AS pct
 FROM
@@ -16,6 +17,27 @@ LEFT JOIN
     ) p
 ON s.mes_sinistros = p.mes_obitos
 ORDER BY mes_ano;
+
+--pct anual
+SELECT mes_ano, SUM(total_sinistros), SUM(total_obitos), ROUND(100 * SUM(total_obitos) / SUM(total_sinistros), 2) AS pct
+FROM (SELECT s.mes_sinistros AS mes_ano, s.total_sinistros, p.total_obitos,
+	ROUND(100.0  * p.total_obitos / s.total_sinistros, 1) AS pct
+FROM
+    (
+    SELECT strftime('%Y-%m', data_sinistro) AS mes_sinistros, COUNT(*) AS total_sinistros
+    FROM sinistros
+    GROUP BY strftime('%Y-%m', data_sinistro)
+    ) s
+LEFT JOIN
+    (
+     SELECT strftime('%Y-%m', data_sinistro) AS mes_obitos, COUNT(*) AS total_obitos
+     FROM pessoas
+     WHERE gravidade_lesao = 'FATAL'
+     GROUP BY strftime('%Y-%m', data_sinistro)
+    ) p
+ON s.mes_sinistros = p.mes_obitos
+ORDER BY mes_ano)
+GROUP BY SUBSTR(mes_ano, 1, 4)
 -- ## resultado de crescimento em README
 
 

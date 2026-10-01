@@ -1,2 +1,18 @@
-.venv
-data
+# Ambientes virtuais e dependências
+.venv/
+node_modules/
+
+# Configurações de IDEs
+.vscode/
+
+# Dados (ignora tudo dentro de processed e raw, não importa a profundidade)
+data/processed/**
+data/raw/**
+
+# Relatórios e figuras específicos (se quiser ignorar estes arquivos exatos)
+reports/figures/**
+
+# Arquivos com dados
+.db
+.csv
+.parquet
