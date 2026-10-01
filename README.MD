@@ -123,8 +123,21 @@ python -m venv .venv
 source .venv/Scripts/activate   # Linux/Mac: source .venv/bin/activate
 pip install -r requirements.txt
 ```
-Baixe os dados em infosiga.detran.sp.gov.br, coloque os CSVs em `data/raw/`
-e rode os notebooks em ordem (`01`, `02`, `03`).
+Baixe os dados em infosiga.detran.sp.gov.br e coloque os CSVs em `data/raw/`
+com estes nomes:
+
+```
+data/raw/
+├── pessoas_2022-2024.csv
+├── pessoas_2025-2026.csv
+├── sinistros_2022-2024.csv
+├── sinistros_2025-2026.csv
+├── veiculos_2022-2024.csv
+└── veiculos_2025-2026.csv
+```
+
+Depois rode os notebooks em ordem (`01`, `02`, `03`). A pasta `data/processed/`
+é criada automaticamente.
 Rode as queries em `sql/consulta.sql` para ver os resultados de cada pergunta.
 Os gráficos gerados pelo notebook `03_analise_sql` ficam em `reports/figures`.
 

@@ -8,6 +8,8 @@ node_modules/
 # Dados (ignora tudo dentro de processed e raw, não importa a profundidade)
 data/processed/**
 data/raw/**
+!data/raw/.gitkeep
+!data/processed/.gitkeep
 
 # Arquivos com dados
 *.db
