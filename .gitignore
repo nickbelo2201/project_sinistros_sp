@@ -9,10 +9,7 @@ node_modules/
 data/processed/**
 data/raw/**
 
-# Relatórios e figuras específicos (se quiser ignorar estes arquivos exatos)
-reports/figures/**
-
 # Arquivos com dados
-.db
-.csv
-.parquet
+*.db
+*.csv
+*.parquet

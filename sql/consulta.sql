@@ -19,7 +19,8 @@ ON s.mes_sinistros = p.mes_obitos
 ORDER BY mes_ano;
 
 --pct anual
-SELECT mes_ano, SUM(total_sinistros), SUM(total_obitos), ROUND(100 * SUM(total_obitos) / SUM(total_sinistros), 2) AS pct
+SELECT mes_ano, SUM(total_sinistros), SUM(total_obitos), 
+	ROUND(100.0 * SUM(total_obitos) / SUM(total_sinistros), 2) AS pct
 FROM (SELECT s.mes_sinistros AS mes_ano, s.total_sinistros, p.total_obitos,
 	ROUND(100.0  * p.total_obitos / s.total_sinistros, 1) AS pct
 FROM
@@ -37,12 +38,17 @@ LEFT JOIN
     ) p
 ON s.mes_sinistros = p.mes_obitos
 ORDER BY mes_ano)
-GROUP BY SUBSTR(mes_ano, 1, 4)
--- ## resultado de crescimento em README
+GROUP BY SUBSTR(mes_ano, 1, 4);
+-- ## resultados (pct calculado como 100.0 * obitos / sinistros)
+-- 2022 | sinistros 192.156 | obitos 5.444 | 2,83 a cada 100
+-- 2023 | sinistros 208.034 | obitos 5.490 | 2,64 a cada 100
+-- 2024 | sinistros 198.688 | obitos 6.171 | 3,11 a cada 100
+-- 2025 | sinistros 190.244 | obitos 6.129 | 3,22 a cada 100
 
 
 -- # quais municipios concentram mais mortes?
-SELECT s.municipio, s.total_sinistros , p.total_mortes, ROUND(100.0 * p.total_mortes / s.total_sinistros, 1) AS pct
+SELECT s.municipio, s.total_sinistros , p.total_mortes,
+	ROUND(100.0 * p.total_mortes / s.total_sinistros, 1) AS pct
 FROM 
 	(
 	SELECT municipio, COUNT(*) as total_sinistros 
@@ -61,11 +67,12 @@ WHERE s.total_sinistros  >= 1000
 ORDER BY pct DESC
 LIMIT 10;
 -- ## resultados baseados em municipios mais fatais
--- IBIUNA | %7,8
--- PIEDADE | %7,0
--- ITANHAEM | %6,7
+-- IBIUNA | 1.103 sinistros | 68 obitos | 6,2%
+-- ITANHAEM | 1.653 sinistros | 100 obitos | 6,0%
+-- PIEDADE | 1.116 sinistros | 64 obitos | 5,7%
 
-SELECT s.municipio, s.total_sinistros , p.total_mortes, ROUND(100.0 * p.total_mortes / s.total_sinistros, 1) AS pct
+SELECT s.municipio, s.total_sinistros , p.total_mortes, 
+	ROUND(100.0 * p.total_mortes / s.total_sinistros, 1) AS pct
 FROM 
 	(
 	SELECT municipio, COUNT(*) as total_sinistros 
@@ -83,15 +90,15 @@ ON p.municipio = s.municipio
 ORDER BY p.total_mortes DESC
 LIMIT 10;
 -- ## resultados baseados em municipios com mais obitos
--- SAO PAULO | 4.556 | %2,5
--- GUARULHOS | 730 | %3,4
--- CAMPINAS | 666 | %3,4
+-- SAO PAULO | 3.888 | 2,2%
+-- GUARULHOS | 627 | 2,9%
+-- CAMPINAS | 602 | 3,1%
 
 
 -- # que dia da semana e turno são mais letais, e não só mais frequentes?
 SELECT s.dia_da_semana, s.turno, s.sinistros, 
 	COALESCE(p.mortes, 0) AS mortes,
-	ROUND(100.0 * COALESCE(p.mortes, 0) / s.sinistros, 1) AS mortes_por_cem
+	ROUND(100.0 * COALESCE(p.mortes, 0) / s.sinistros, 2) AS mortes_por_cem
 FROM 
     (SELECT dia_da_semana, turno, COUNT(*) AS sinistros
     FROM sinistros
@@ -113,9 +120,9 @@ WHERE s.turno <> 'NAO DISPONIVEL'
 ORDER BY mortes_por_cem DESC
 LIMIT 10;
 -- ## resultados
--- SEXTA-FEIRA | MADRUGADA | SINISTROS 8.580 | MORTES 593 | 6,9 a cada 100 
--- SEGUNDA-FEIRA | MADRUGADA | SINISTROS 9.949 | MORTES 657 | 6,6 a cada 100
--- QUARTA-FEIRA | MADRUGADA | SINISTROS 6.202 | MORTES 408 | 6,6 a cada 100 
+-- SEXTA-FEIRA | MADRUGADA | SINISTROS 8.580 | MORTES 594 | 6,9 a cada 100
+-- QUARTA-FEIRA | MADRUGADA | SINISTROS 6.202 | MORTES 408 | 6,6 a cada 100
+-- SEGUNDA-FEIRA | MADRUGADA | SINISTROS 9.949 | MORTES 658 | 6,6 a cada 100
 
 
 -- # qual o perfil das vitimas fatais?
@@ -127,11 +134,11 @@ FROM pessoas
 WHERE gravidade_lesao = 'FATAL' AND 
 faixa_etaria_demografica IS NOT NULL
 GROUP BY faixa_etaria_demografica
-ORDER BY mortes DESC;
+ORDER BY pct DESC;
 -- ## resultados com vitima sobre base informada
--- 20 a 24 com %12,2
--- 25 a 29 com %10,5
--- 40 a 44 com %9.1
+-- 20 a 24 com 12,2%
+-- 25 a 29 com 10,5%
+-- 40 a 44 com 9,1%
 
 -- porcentagem de sexo
 SELECT sexo, 
@@ -142,9 +149,9 @@ WHERE gravidade_lesao = 'FATAL'
 GROUP BY sexo
 ORDER BY pct DESC;
 -- ## resultados
--- MASCULINO %82,0
--- FEMININO %17,7
--- NÃO DISPONIVEL %0,3
+-- MASCULINO 82,0%
+-- FEMININO 17,7%
+-- NAO DISPONIVEL 0,3%
 
 -- porcentagem de profissao
 SELECT profissao, 
@@ -155,7 +162,7 @@ WHERE gravidade_lesao = 'FATAL'
 GROUP BY profissao
 ORDER BY pct DESC;
 -- ## resultado limitado para analise
--- NULLO %63,6 
+-- NULO 63,6%
 
 -- porcentagem tipo de vitima
 SELECT tipo_de_vitima, 
@@ -166,9 +173,9 @@ WHERE gravidade_lesao = 'FATAL'
 GROUP BY tipo_de_vitima 
 ORDER BY pct DESC;
 -- ## resultados
--- CONDUTOR %62
--- PEDESTRE %22
--- PASSAGEIRO %11
+-- CONDUTOR 62,1%
+-- PEDESTRE 22,9%
+-- PASSAGEIRO 11,3%
 
 -- porcentagem veiculo
 SELECT tipo_veiculo_vitima, 
@@ -179,9 +186,9 @@ WHERE gravidade_lesao = 'FATAL'
 GROUP BY tipo_veiculo_vitima 
 ORDER BY pct DESC;
 -- ## resultados
--- MOTOCICLETA %41 
--- SEM VEICULO %22
--- AUTOMOVEL %22
+-- MOTOCICLETA 41,9%
+-- SEM VEICULO (NULL, pedestres) 22,9%
+-- AUTOMOVEL 22,4%
 
 -- proporcao tipo de vitima e tipo veiculo
 SELECT tipo_de_vitima, tipo_veiculo_vitima, 
@@ -190,11 +197,11 @@ SELECT tipo_de_vitima, tipo_veiculo_vitima,
 FROM pessoas
 WHERE gravidade_lesao = 'FATAL'
 GROUP BY tipo_de_vitima, tipo_veiculo_vitima
-ORDER BY total DESC;
--- ## resultados
--- CONDUTOR MOTOCICLISTA 37,0 a cada 100 
--- PEDESTRE 22,9 a cada 100
--- CONDUTOR AUTOMOVEL 14,9 a cada 100
+ORDER BY pct DESC;
+-- ## resultados (% do total de vitimas fatais)
+-- CONDUTOR MOTOCICLISTA 37,0%
+-- PEDESTRE 22,9%
+-- CONDUTOR AUTOMOVEL 14,9%
 
 
 -- # qual combinação de fatores está associada a maior gravidade
